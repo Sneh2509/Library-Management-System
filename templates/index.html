@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ library_name }} - Library Management</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body class="bg-light">
+
+    <div class="container my-4">
+        <h2 class="text-center text-primary">{{ library_name }} - Library Management</h2>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Book List -->
+        <div class="card shadow-sm p-3 mb-4">
+            <h5 class="card-title text-center">Available Books</h5>
+            <ul class="list-group">
+                {% for book, qty in books.items() %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ book }} <span class="badge bg-success">{{ qty }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Forms -->
+        <div class="row">
+            <!-- Add Book -->
+            <div class="col-md-4">
+                <div class="card shadow-sm p-3">
+                    <h5 class="text-center">Add Book</h5>
+                    <form action="{{ url_for('add_book') }}" method="POST">
+                        <div class="mb-2">
+                            <input type="text" name="bookname" class="form-control" placeholder="Book Name" required>
+                        </div>
+                        <div class="mb-2">
+                            <input type="number" name="quantity" class="form-control" placeholder="Quantity" min="1" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Add</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Lend Book -->
+            <div class="col-md-4">
+                <div class="card shadow-sm p-3">
+                    <h5 class="text-center">Lend Book</h5>
+                    <form action="{{ url_for('lend_book') }}" method="POST">
+                        <div class="mb-2">
+                            <input type="text" name="person_name" class="form-control" placeholder="Your Name" required>
+                        </div>
+                        <div class="mb-2">
+                            <input type="text" name="bookname" class="form-control" placeholder="Book Name" required>
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100">Lend</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Return Book -->
+            <div class="col-md-4">
+                <div class="card shadow-sm p-3">
+                    <h5 class="text-center">Return Book</h5>
+                    <form action="{{ url_for('return_book') }}" method="POST">
+                        <div class="mb-2">
+                            <input type="text" name="person_name" class="form-control" placeholder="Your Name" required>
+                        </div>
+                        <div class="mb-2">
+                            <input type="text" name="bookname" class="form-control" placeholder="Book Name" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Return</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Borrowed Books -->
+        <div class="card shadow-sm p-3 mt-4">
+            <h5 class="text-center">Borrowed Books</h5>
+            {% if lend_records %}
+                <ul class="list-group">
+                    {% for book, borrowers in lend_records.items() %}
+                        <li class="list-group-item">
+                            <strong>{{ book }}</strong> - Borrowed by: {{ ", ".join(borrowers) }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-center text-muted">No books are currently borrowed.</p>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>
